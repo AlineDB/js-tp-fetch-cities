@@ -1,5 +1,6 @@
 const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
 const cities = [];
+const searchInput = document.getElementById('search');
 const searchForm = document.querySelector('.search-form');
 const suggestions = document.querySelector('.suggestions');
 
@@ -9,20 +10,19 @@ if (window.fetch){
     fetch(endpoint)
         .then(response => {
             if(response.status === 200){
-                response.json().then(responseJSON =>{
+                response.json().then(responseJSON => {
                         cities.push(...responseJSON); //on pourrait écrire cities = responseJSON mais le tableau sera un peu différent
-                    console.log(cities);
                     }
                 );
             } else{
                 console.error(`Oups ${response.status}`);
             }
-        }) .catch(error=>{
-        console.log(`Aie ${error}`)
+        }).catch(error=> {
+        console.error(`Aie ${error}`);
     })
 } else {
     //faire quelque chose avec XMLHttpRequest
-}
+};
 
 function numberWithSpace(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
@@ -36,11 +36,11 @@ function findMatches(wordToMatch){
 }
 
 function displayMatches(wordToMatch){
-    suggestions.innetHTML = findMatches(wordToMatch).map(item => {
+    suggestions.innertHTML = findMatches(wordToMatch).map(item => {
         const regex = new RegExp (wordToMatch, 'gi');
         return ` <li>
         <span class="name">${item.city.replace(regex, `<span class="hl">${wordToMatch}</span>`)}, ${item.state.replace(regex, `<span class="hl">${wordToMatch}</span>`)}</span>
-        <span class="population">${item.population}</span></li>`;
+        <span class="population">${numberWithSpace(item.population)}</span></li>`;
     }).join('');
 }
 
@@ -48,7 +48,7 @@ searchForm.addEventListener('submit', (e)=>{
     e.preventDefault();
 });
 
-searchForm.querySelector('#search').addEventListener('keyup', (e)=>{
+searchInput.addEventListener('keyup', (e)=>{
     displayMatches(e.currentTarget.value);
 });
 
